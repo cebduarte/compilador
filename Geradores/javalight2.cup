@@ -1,0 +1,204 @@
+/*
+ * CUP specification for the parser for a simple demo language
+ * Change this into the parser for your implementation of MiniJava.
+ */
+
+package org.parser;
+
+import Throwables.*;
+import AST.*;
+import java.util.*;
+import java_cup.runtime.*;
+
+
+/* Terminals (tokens returned by the scanner) */
+
+/* reserved words: */
+terminal TYPE_BOOL;
+terminal TYPE_INT;
+terminal TYPE_STRING;
+terminal COND_IF, COND_ELSE, COND_WHILE, WORD_RETURN;
+terminal WORD_CLASS, WORD_EXTENDS;
+terminal WORD_PUBLIC, WORD_STATIC, WORD_VOID, WORD_MAIN;
+terminal WORD_THIS;
+terminal WORD_LENGTH;
+terminal WORD_NEW;
+terminal WORD_PRINTLN;
+terminal WORD_TRUE, WORD_FALSE;
+
+/* operators and friends: */
+terminal OP_PLUS, OP_MINUS, OP_MULT, OP_AND, OP_LT, OP_EQUAL, OP_NOT, DEL_DOT, DEL_COMMA;
+
+/* delimiters: */
+terminal DEL_LBRACK, DEL_RBRACK,
+    DEL_LPAREN, DEL_RPAREN,
+    DEL_LBRACE, DEL_RBRACE,
+    DEL_SEMICOLON;
+
+/* tokens with values: */
+terminal String IDENTIFIER;
+terminal Integer INTEGER_LITERAL;
+
+/* Nonterminals */
+
+nonterminal Program Program;
+nonterminal StatementList StatementList;
+nonterminal MainClass MainClass;
+nonterminal MethodDecl MethodDecl;
+nonterminal MethodDeclList MethodDeclList;
+nonterminal Statement Statement;
+nonterminal Exp Expression;
+nonterminal ArrayLookup ArrayLookup;
+nonterminal ArrayLength ArrayLength;
+nonterminal Identifier Identifier;
+nonterminal Type Type;
+nonterminal VarDecl VarDeclaration;
+nonterminal VarDeclList VarDeclarationList;
+nonterminal Formal FormalParameter;
+nonterminal FormalList FormalParameterList;
+nonterminal FormalList FormalParameterListAndParens;
+nonterminal ExpList MethodInvocationParameterList;
+nonterminal ExpList ExpressionList;
+nonterminal ClassDecl ClassDecl;
+nonterminal ClassDeclList ClassDeclList;
+
+/* Precedence declarations */
+
+precedence nonassoc OP_EQUAL;
+precedence nonassoc OP_AND;
+precedence left OP_LT;
+precedence left OP_PLUS, OP_MINUS;
+precedence left OP_MULT;
+precedence right OP_NOT, WORD_NEW;
+precedence left DEL_DOT;
+
+/* Productions */
+
+Program ::= MainClass:m ClassDeclList:c
+            {: RESULT = new Program(m, c, mleft); :};
+
+// Need to go backwards or things break. AST node type StatementList
+// ensures that the ordering all works later on.
+StatementList ::= Statement:s StatementList:l
+            {: RESULT = l; l.addElement(s); :}
+        |
+            {: RESULT = new StatementList(0); :};
+
+MainClass ::= WORD_CLASS:c Identifier:id DEL_LBRACE WORD_PUBLIC WORD_STATIC WORD_VOID WORD_MAIN DEL_LPAREN TYPE_STRING DEL_LBRACK DEL_RBRACK Identifier:args DEL_RPAREN DEL_LBRACE Statement:stmt DEL_RBRACE DEL_RBRACE
+            {: RESULT = new MainClass(id, args, stmt, cleft); :};
+
+ClassDecl ::= WORD_CLASS Identifier:i DEL_LBRACE VarDeclarationList:v MethodDeclList:m DEL_RBRACE
+            {: RESULT = new ClassDeclSimple(i, v, m, ileft); :}
+        | WORD_CLASS Identifier:i WORD_EXTENDS Identifier:parent DEL_LBRACE VarDeclarationList:v MethodDeclList:m DEL_RBRACE
+            {: RESULT = new ClassDeclExtends(i, parent, v, m, ileft); :};
+
+ClassDeclList ::=
+            {: RESULT = new ClassDeclList(0); :}
+        | ClassDecl:c ClassDeclList:l
+            {: RESULT = l; l.addElement(c); :};
+
+MethodDeclList ::=
+            {: RESULT = new MethodDeclList(0); :}
+        | MethodDecl:m MethodDeclList:l
+            {: RESULT = l; l.addElement(m); :};
+
+MethodDecl ::= WORD_PUBLIC:p Type:t Identifier:i FormalParameterListAndParens:params DEL_LBRACE VarDeclarationList:vars StatementList:stmts WORD_RETURN Expression:rv DEL_SEMICOLON DEL_RBRACE
+            {: RESULT = new MethodDecl(t, i, params, vars, stmts, rv, pleft); :};
+
+Statement   ::= Identifier:id OP_EQUAL Expression:expr DEL_SEMICOLON
+                {: RESULT = new Assign(id, expr, idleft); :}
+            | COND_IF:ifKeyword DEL_LPAREN Expression:expr DEL_RPAREN Statement:thenStmt COND_ELSE Statement:elseStmt
+                {: RESULT = new If(expr, thenStmt, elseStmt, ifKeywordleft); :}
+            | WORD_PRINTLN:s DEL_LPAREN Expression:e DEL_RPAREN DEL_SEMICOLON
+                {: RESULT = new Print(e, sleft); :}
+            | Identifier:id DEL_LBRACK Expression:e DEL_RBRACK OP_EQUAL Expression:v DEL_SEMICOLON
+                    {: RESULT = new ArrayAssign(id, e, v, idleft); :}
+            | COND_WHILE:w DEL_LPAREN Expression:cond DEL_RPAREN Statement:s
+                    {: RESULT = new While(cond, s, wleft); :}
+            | DEL_LBRACE StatementList:s DEL_RBRACE
+                    {: RESULT = new Block(s, sleft); :};
+
+Identifier  ::= IDENTIFIER:id
+                {: RESULT = new Identifier(id, idleft); :};
+
+Expression    ::= IDENTIFIER:name
+            {: RESULT = new IdentifierExp(name, nameleft); :}
+        | Expression:arg1 OP_PLUS Expression:arg2
+            {: RESULT = new Plus(arg1, arg2, arg1left); :}
+        | Expression:arg1 OP_MINUS Expression:arg2
+            {: RESULT = new Minus(arg1, arg2, arg1left); :}
+        | Expression:arg1 OP_MULT Expression:arg2
+            {: RESULT = new Times(arg1, arg2, arg1left); :}
+        | Expression:arg1 OP_LT Expression:arg2
+            {: RESULT = new LessThan(arg1, arg2, arg1left); :}
+        | Expression:arg1 OP_AND Expression:arg2
+            {: RESULT = new And(arg1, arg2, arg1left); :}
+        | DEL_LPAREN Expression:expr DEL_RPAREN
+            {: RESULT = expr; :}
+        | OP_NOT:not Expression:expr
+            {: RESULT = new Not(expr, notleft); :}
+        | WORD_TRUE:t
+            {: RESULT = new True(tleft); :}
+        | WORD_FALSE:f
+            {: RESULT = new False(fleft); :}
+        | WORD_THIS:t
+            {: RESULT = new This(tleft); :}
+        | WORD_NEW:n Identifier:i DEL_LPAREN DEL_RPAREN
+            {: RESULT = new NewObject(i, nleft); :}
+        | ArrayLength:l
+            {: RESULT = l; :}
+        | ArrayLookup:l
+            {: RESULT = l; :}
+        | WORD_NEW:n TYPE_INT DEL_LBRACK Expression:e DEL_RBRACK
+            {: RESULT = new NewArray(e, nleft); :}
+        | Expression:e DEL_DOT Identifier:id MethodInvocationParameterList:l
+            {: RESULT = new Call(e, id, l, eleft); :}
+        | INTEGER_LITERAL:i
+            {: RESULT = new IntegerLiteral(i.intValue(), ileft); :};
+
+ArrayLength ::= Expression:e DEL_DOT WORD_LENGTH
+            {: RESULT = new ArrayLength(e, eleft); :};
+
+ArrayLookup ::= Expression:e DEL_LBRACK Expression:i DEL_RBRACK
+            {: RESULT = new ArrayLookup(e, i, eleft); :};
+
+Type ::= TYPE_INT:i
+            {: RESULT = new IntegerType(ileft); :}
+        | TYPE_BOOL:b
+            {: RESULT = new BooleanType(bleft); :}
+        | Identifier:i
+            {: RESULT = new IdentifierType(i.s, ileft); :}
+        | TYPE_INT:i DEL_LBRACK DEL_RBRACK
+            {: RESULT = new IntArrayType(ileft); :};
+
+VarDeclaration ::= Type:t Identifier:i DEL_SEMICOLON
+            {: RESULT = new VarDecl(t, i, tleft); :};
+
+VarDeclarationList ::=
+            {: RESULT = new VarDeclList(0); :}
+        | VarDeclarationList:l VarDeclaration:e
+            {: RESULT = l; l.addElement(e); :};
+
+FormalParameter ::= Type:t Identifier:i
+            {: RESULT = new Formal(t, i, tleft); :};
+
+FormalParameterListAndParens ::= DEL_LPAREN:l DEL_RPAREN
+            {: RESULT = new FormalList(lleft); :}
+        | DEL_LPAREN FormalParameterList:params DEL_RPAREN
+            {: RESULT = params; :};
+
+FormalParameterList ::= FormalParameter:p DEL_COMMA FormalParameterList:l
+            {: RESULT = l; l.addElement(p); :}
+        | FormalParameter:p
+            {: RESULT = new FormalList(pleft); RESULT.addElement(p); :};
+
+MethodInvocationParameterList ::= DEL_LPAREN:l DEL_RPAREN
+            {: RESULT = new ExpList(lleft); :}
+        | DEL_LPAREN:l ExpressionList:e DEL_RPAREN
+            {: RESULT = e; :}
+        ;
+
+ExpressionList ::= Expression:e
+            {: RESULT = new ExpList(eleft); RESULT.addElement(e); :}
+        | Expression:e DEL_COMMA ExpressionList:l
+            {: RESULT = l; RESULT.addElement(e); :};

@@ -1,0 +1,23 @@
+Reading "C:\Users\c3po\Desktop\Projeto\Geradores\javalight2.flex"
+
+Warning in file "C:\Users\c3po\Desktop\Projeto\Geradores\javalight2.flex" (line 120): 
+".|\n" does not match all characters, because "." excludes all Unicode newline chars - use "[^]" instead
+
+.|\n { 
+^
+Constructing NFA : 267 states in NFA
+Converting NFA to DFA : 
+...............................................................................
+..............................................................
+143 states before minimization, 129 states in minimized DFA
+Writing code to "C:\Users\c3po\Desktop\Projeto\Geradores\Scanner.java"
+0 errors, 1 warning.
+
+Generation finished successfully.
+
+
+
+-------------------------------------------------------------------
+
+
+
