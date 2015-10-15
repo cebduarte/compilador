@@ -777,7 +777,7 @@ public final class Scanner implements java_cup.runtime.Scanner {
             }
           case 43: break;
           case 4: 
-            { /* Ignore os espaÁos em branco */
+            { /* Ignore os espa√ßos em branco */
             }
           case 44: break;
           case 5: 
@@ -841,7 +841,7 @@ public final class Scanner implements java_cup.runtime.Scanner {
             }
           case 59: break;
           case 20: 
-            { /* Ignore os coment·rios */
+            { /* Ignore os coment√°rios */
             }
           case 60: break;
           case 21: 
@@ -864,9 +864,9 @@ public final class Scanner implements java_cup.runtime.Scanner {
             { return symbol(Sym.COND_ELSE);
             }
           case 65: break;
-          /*case 26: 
-            { return symbol(Sym.???,new Boolean(true));
-            }*/
+          case 26: 
+            { //return symbol(Sym.BOOL_LITERAL,new Boolean(true));
+            }
           case 66: break;
           case 27: 
             { return symbol(Sym.WORD_THIS);
@@ -888,9 +888,9 @@ public final class Scanner implements java_cup.runtime.Scanner {
             { return symbol(Sym.COND_WHILE);
             }
           case 71: break;
-          /*case 32: 
-            { return symbol(????,new Boolean(false));
-            }*/
+          case 32: 
+            { //return symbol(Sym.BOOL_LITERAL,new Boolean(false));
+            }
           case 72: break;
           case 33: 
             { return symbol(Sym.WORD_RETURN);

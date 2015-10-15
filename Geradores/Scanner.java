@@ -865,7 +865,7 @@ public final class Scanner implements java_cup.runtime.Scanner {
             }
           case 65: break;
           case 26: 
-            { return symbol(Sym.BOOL_LITERAL,new Boolean(true));
+            { return symbol(Sym.WORD_TRUE);
             }
           case 66: break;
           case 27: 
@@ -889,7 +889,7 @@ public final class Scanner implements java_cup.runtime.Scanner {
             }
           case 71: break;
           case 32: 
-            { return symbol(Sym.BOOL_LITERAL,new Boolean(false));
+            { return symbol(Sym.WORD_FALSE);
             }
           case 72: break;
           case 33: 

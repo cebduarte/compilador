@@ -67,6 +67,8 @@ public class Sym implements sym {
 			case IDENTIFIER: 	  return "<ID("+(String)symbol.value+")>";
 			case INTEGER_LITERAL: return "<INT("+symbol.value.toString()+")>";
 			//case TRUE/FALSE...
+			case WORD_TRUE:        return "<TRUE>";
+			case WORD_FALSE:        return "<FALSE>";
 			case OP_PLUS: 		  return "<PLUS>";
 			case OP_MINUS: 		  return "<MINUS>";
 			case OP_EQUAL: 	   	  return "<EQUAL>";

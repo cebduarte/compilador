@@ -9,7 +9,8 @@ public class Program {
 
 	public static void main(String[] args) {
 		
-		String FileComp = "C:\\Users\\Eduardo\\Documents\\Estudos\\Faculdade\\2015.02\\Compiladores\\Projeto\\JavaLight2\\JavaLight2\\examples\\sucess\\Factorial.java";
+		String FileComp = "/Users/alvarobasto/Documents/faculdade/Compiladores/projeto/Projeto/JavaLight2/JavaLight2/examples/sucess/Factorial.java";
+
 		
 		//entrega do scanner (antes da prova)
 		/*

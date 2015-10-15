@@ -69,6 +69,8 @@ COMMENT = {COMMENT_MULTILINE}|{COMMENT_SIMPLELINE}|{COMMENT_DOCUMENTATION}
 "new"				 { return symbol(Sym.WORD_NEW); 	}
 "length"			 { return symbol(Sym.WORD_LENGTH); 	}
 "System.out.println" { return symbol(Sym.WORD_PRINTLN); }
+"true"				 { return symbol(Sym.WORD_TRUE);    }
+"false"				 { return symbol(Sym.WORD_FALSE);    }
 
 /* Tipos de Dados*/
 "int"	  { return symbol(Sym.TYPE_INT);	}
@@ -81,8 +83,8 @@ COMMENT = {COMMENT_MULTILINE}|{COMMENT_SIMPLELINE}|{COMMENT_DOCUMENTATION}
 "while" { return symbol(Sym.COND_WHILE);}
 
 /* Valores Booleanos */
-"true"	{ return symbol(Sym.BOOL_LITERAL,new Boolean(true));  }
-"false" { return symbol(Sym.BOOL_LITERAL,new Boolean(false)); }
+// "true"	{ return symbol(Sym.BOOL_LITERAL,new Boolean(true));  }
+// "false" { return symbol(Sym.BOOL_LITERAL,new Boolean(false)); }
 
 /* Identificadores */
 {IDENTIFIER} 	  { return symbol(Sym.IDENTIFIER, yytext()); 	  }
