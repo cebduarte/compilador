@@ -20,10 +20,16 @@ public class Program {
 		*/
 		
 		//entrega do scanner + parser (depois da prova)
-		
+		/*
 		String CodeText = openFile(FileComp);
 		ParserTest parser = new ParserTest(CodeText);
 		parser.run(); 
+		*/
+		
+		//entrega da analise semantica		
+		String CodeText = openFile(FileComp);
+		SemanticTest semantic = new SemanticTest(CodeText);
+		semantic.run();
 	
 	}
 	
